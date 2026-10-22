@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   int headers_len = argc - 3;
   int *headers = parse_argv_to_int(headers_len, argv + 3);
 
-  //printf("path: %s\nsep: %s\n", path, separator);
+  // printf("path: %s\nsep: %s\n", path, separator);
 
   FILE *file;
   // TODO: it won't trigger for directories'
@@ -64,9 +64,9 @@ int main(int argc, char **argv) {
         word_number++;
       }
     }
-    free(line);
     if (printed)
       printf("\n");
+    free(line);
   }
 
   fclose(file);
