@@ -1,0 +1,5 @@
+Jan:Kowalski:25:Krakow:Informatyka
+Anna:Nowak:21:Warszawa:Matematyka
+Piotr:Wisniewski:30:Gdansk:Fizyka
+Tomasz:Zielinski:19:Wroclaw:Architektura
+Maria:Lewandowska:22:Poznan:Biologia
