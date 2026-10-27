@@ -40,12 +40,14 @@ double x_cos_x_opt(double x, size_t n) {
 
 int main(int argc, char **argv) {
   if (argc != 3) {
+    printf("not enough arguments\n");
+    printf("Usage:\n\t./main <x> <n>");
     return 0;
   }
   double x = atof(argv[1]);
   int n = atoi(argv[2]);
-  if (n < 0) {
-    printf("Error: n must be 0 or more");
+  if (n < 1) {
+    printf("Error: n must be 1 or more");
     return 1;
   }
 
