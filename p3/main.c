@@ -1,4 +1,4 @@
-#define MATRIX_SIZE(n) (n * (n + 1)) / 2
+#define matrix_size(n) (n * (n + 1)) / 2
 #include <stdio.h>
 
 void read_matrix(int n, double *matrix);
@@ -9,7 +9,7 @@ void print_vector(int n, double *vector);
 
 int main() {
 
-  printf("Podaj rozmiar macierza n: ");
+  printf("podaj rozmiar macierza n: ");
   int n = 0;
   scanf("%i", &n);
   if (n < 2) {
@@ -24,7 +24,7 @@ int main() {
    *      size = (n) + (n-1) + (n-2) + (n-3) + ... + 0
    *      size = (n*(n+1))/2
    */
-  int size = MATRIX_SIZE(n);
+  int size = matrix_size(n);
 
   double matrix[size];
   read_matrix(n, matrix);
@@ -38,7 +38,7 @@ int main() {
 }
 
 void read_matrix(int n, double *matrix) {
-  int size = MATRIX_SIZE(n);
+  int size = matrix_size(n);
 
   int offset = 0;
   for (int i = 0; i < n; i++) {
@@ -57,18 +57,33 @@ void read_vector(int n, double *vector) {
   }
 }
 
-void print_matrix(int n, double *matrix) {
-  int size = MATRIX_SIZE(n);
+/*           i
+ * [ 1 2 3 ] 1
+ * [ x 4 5 ] 2
+ * [ x x 8 ] 3
+ * j 1 2 3
+ * a[3,1] = 3 [x]
+ * a[1,3] = 3
+ */
+double *matrix_get_element(int n, double *matrix, int i, int j) {
+  if (j < i) {
+    return matrix_get_element(n, matrix, j, i);
+  }
 
-  printf("\nZbudowany matrix:\n");
+  int offset = i * n - (i * (i - 1)) / 2;
+
+  return &matrix[offset + (j - i)];
+}
+
+void print_matrix(int n, double *matrix) {
+  int size = matrix_size(n);
+
+  printf("\nzbudowany matrix:\n");
   int offset = 0;
   for (int i = 0; i < n; i++) {
     printf("|\t");
-    for (int k = 0; k < i; k++) {
-      printf("\t");
-    }
-    for (int k = 0; k < n - i; k++) {
-      printf("%g\t", matrix[offset + k]);
+    for (int k = 0; k < n; k++) {
+      printf("%g\t", *matrix_get_element(n, matrix, i, k));
     }
 
     printf("|\n");
@@ -77,7 +92,7 @@ void print_matrix(int n, double *matrix) {
 }
 
 void print_vector(int n, double *vector) {
-  printf("\nZbudowany vector:\n[\t");
+  printf("\nzbudowany vector:\n[\t");
   for (int i = 0; i < n; i++) {
     printf("%g\t", vector[i]);
   }
