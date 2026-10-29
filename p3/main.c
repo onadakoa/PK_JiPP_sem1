@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #define matrix_size(n) (n * (n + 1)) / 2
 #include <stdio.h>
 
@@ -6,6 +7,8 @@ void read_vector(int n, double *vector);
 
 void print_matrix(int n, double *matrix);
 void print_vector(int n, double *vector);
+
+double *multiply_matrix_vector(int n, double *matrix, double *vector);
 
 int main() {
 
@@ -16,14 +19,7 @@ int main() {
     printf("rozmiar musi być >= 2");
     return 1;
   }
-  /*      n = 4
-   *      [ * x x x ] [*xxx] 4
-   *      [ x * x x ] [*xx] 3
-   *      [ x x * x ] [*x] 2
-   *      [ x x x * ] [*] 1       gsize = 1+2+3+4 = 10
-   *      size = (n) + (n-1) + (n-2) + (n-3) + ... + 0
-   *      size = (n*(n+1))/2
-   */
+
   int size = matrix_size(n);
 
   double matrix[size];
@@ -34,12 +30,14 @@ int main() {
   read_vector(n, vector);
   print_vector(n, vector);
 
+  double *out_vector = multiply_matrix_vector(n, matrix, vector);
+  printf("\nAx:\n");
+  print_vector(n, out_vector);
+
   return 0;
 }
 
 void read_matrix(int n, double *matrix) {
-  int size = matrix_size(n);
-
   int offset = 0;
   for (int i = 0; i < n; i++) {
     printf("wiersz %i (%i elementow): ", i, n - i);
@@ -76,10 +74,7 @@ double *matrix_get_element(int n, double *matrix, int i, int j) {
 }
 
 void print_matrix(int n, double *matrix) {
-  int size = matrix_size(n);
-
   printf("\nzbudowany matrix:\n");
-  int offset = 0;
   for (int i = 0; i < n; i++) {
     printf("|\t");
     for (int k = 0; k < n; k++) {
@@ -87,7 +82,6 @@ void print_matrix(int n, double *matrix) {
     }
 
     printf("|\n");
-    offset += n - i;
   }
 }
 
@@ -97,4 +91,18 @@ void print_vector(int n, double *vector) {
     printf("%g\t", vector[i]);
   }
   printf("]\n");
+}
+
+double *multiply_matrix_vector(int n, double *matrix, double *vector) {
+  double *out_vector = malloc(sizeof(double) * n);
+
+  for (int i = 0; i < n; i++) {
+    double out_element = 0;
+    for (int k = 0; k < n; k++) {
+      out_element += (*matrix_get_element(n, matrix, i, k)) * vector[k];
+    }
+    out_vector[i] = out_element;
+  }
+
+  return out_vector;
 }
