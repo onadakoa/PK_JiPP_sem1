@@ -1,9 +1,7 @@
 #ifndef TUI_H
 #define TUI_H
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
 
-#define PREFIX "[shell >] "
+#define DEFAULT_PREFIX "[ >] "
 #define INPUT_SIZE 64
 
 typedef void (*handler_fn_t)(int, char **);
@@ -24,6 +22,7 @@ void tui_print_handlers();
 int tui_should_run();
 void tui_stop();
 char *tui_ask();
+char *tui_pask(char *prefix);
 void tui_parse(char *s, int *argc, char ***argv);
 void tui_argv_free(int argc, char ***argv);
 char *tui_argv_pull(int *argc, char ***argv);

@@ -64,8 +64,8 @@ void tui_clean() {
 int tui_should_run() { return (int)status; }
 void tui_stop() { status = EXIT; }
 
-char *tui_ask() {
-  printf("\n%s", PREFIX);
+char *tui_pask(char *prefix) {
+  printf("\n%s", prefix);
   char *out = malloc(INPUT_SIZE);
   if (fgets(out, INPUT_SIZE, stdin) == NULL) {
     free(out);
@@ -74,6 +74,7 @@ char *tui_ask() {
 
   return out;
 }
+char *tui_ask() { return tui_pask(DEFAULT_PREFIX); }
 
 void tui_parse(char *s, int *argc, char ***argv) {
   (*argc) = 0;
@@ -104,7 +105,7 @@ void tui_parse(char *s, int *argc, char ***argv) {
 
 void tui_argv_free(int argc, char ***argv) {
   for (int i = 0; i < argc; i++) {
-    free(argv[i]);
+    free((*argv)[i]);
   }
   free((*argv));
   (*argv) = NULL;
@@ -119,6 +120,7 @@ char *tui_argv_pull(int *argc, char ***argv) {
   if (*argc == 1) {
     free(*argv);
     *argv = NULL;
+    *argc = 0;
     return first;
   }
 
