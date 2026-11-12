@@ -1,8 +1,7 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <student.h>
-
-typedef enum { NAME = 0, SURNAME = 1, BIRTH_YEAR = 2 } StudentField;
 
 StudentData *fsd_read_one(FILE *stream) {
   if (stream == NULL)
@@ -25,7 +24,7 @@ StudentData *fsd_read_one(FILE *stream) {
     else if (line[line_len - 1] == '\n')
       line[line_len - 1] = '\0';
 
-    switch ((StudentField)i) {
+    switch ((StudentDataField)i) {
     case NAME:
       out->name = malloc(strlen(line) + 1);
       strcpy(out->name, line);
@@ -60,4 +59,12 @@ void sd_print_horizontal(StudentData *obj, const char separator) {
     if (i < 2)
       printf("%c", separator);
   }
+}
+
+void sd_free(StudentData **obj) {
+  free((*obj)->name);
+  free((*obj)->surname);
+  free((*obj)->birth_year);
+  free((*obj));
+  obj = NULL;
 }

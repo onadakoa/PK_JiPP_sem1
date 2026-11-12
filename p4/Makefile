@@ -15,5 +15,5 @@ $(BUILD_DIR):
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c $(INCLUDE_DIR)/%.h | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-main: $(SOURCE_DIR)/main.c $(OBJS)
+fifo_list: $(SOURCE_DIR)/fifo_list.c $(OBJS)
 	$(CC) $^ -o $@ $(CFLAGS)
