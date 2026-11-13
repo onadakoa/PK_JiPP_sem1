@@ -134,3 +134,9 @@ char *tui_argv_pull(int *argc, char ***argv) {
 
   return first;
 }
+
+void tui_clear_input_buffer() {
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF) {
+  }
+}
