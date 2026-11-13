@@ -3,7 +3,9 @@
 #include <string.h>
 #include <student.h>
 
-StudentData *fsd_read_one(FILE *stream) {
+char *StudentDataFieldName[3] = {"NAME", "SURNAME", "BIRTH_YEAR"};
+
+StudentData *sd_fread_one(FILE *stream) {
   if (stream == NULL)
     return NULL;
 
@@ -51,13 +53,13 @@ void sd_print(StudentData *obj) {
   printf("%s\n%s\n%s\n", obj->name, obj->surname, obj->birth_year);
 }
 
-void sd_print_horizontal(StudentData *obj, const char separator) {
+void sd_print_horizontal(StudentData *obj, const char *separator) {
   char *tmp[] = {obj->name, obj->surname, obj->birth_year};
 
   for (int i = 0; i < 3; i++) {
-    printf("%s", tmp[i]);
+    printf("%s: %s", StudentDataFieldName[i], tmp[i]);
     if (i < 2)
-      printf("%c", separator);
+      printf("%s", separator);
   }
 }
 

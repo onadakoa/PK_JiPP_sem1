@@ -10,6 +10,7 @@ typedef enum {
   SURNAME,
   BIRTH_YEAR,
 } StudentDataField;
+extern char *StudentDataFieldName[3];
 
 typedef struct {
   char *name;
@@ -17,10 +18,10 @@ typedef struct {
   char *birth_year;
 } StudentData;
 
-StudentData *fsd_read_one(FILE *stream);
+StudentData *sd_fread_one(FILE *stream);
 
 void sd_print(StudentData *obj);
-void sd_print_horizontal(StudentData *obj, const char separator);
+void sd_print_horizontal(StudentData *obj, const char *separator);
 
 void sd_free(StudentData **obj);
 #endif // !STUDENTS_H

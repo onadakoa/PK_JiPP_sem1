@@ -5,7 +5,7 @@ INCLUDE_DIR ?= include
 CC = gcc
 CFLAGS ?= -std=c99 -Wall -Wextra -I$(INCLUDE_DIR)
 
-TARGETS = student tui project
+TARGETS = student tui
 
 OBJS = $(TARGETS:%=$(BUILD_DIR)/%.o)
 

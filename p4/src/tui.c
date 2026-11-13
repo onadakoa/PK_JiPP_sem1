@@ -103,12 +103,13 @@ void tui_parse(char *s, int *argc, char ***argv) {
   }
 }
 
-void tui_argv_free(int argc, char ***argv) {
-  for (int i = 0; i < argc; i++) {
+void tui_argv_free(int *argc, char ***argv) {
+  for (int i = 0; i < *argc; i++) {
     free((*argv)[i]);
   }
   free((*argv));
   (*argv) = NULL;
+  (*argc) = 0;
 }
 
 char *tui_argv_pull(int *argc, char ***argv) {

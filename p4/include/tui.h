@@ -24,7 +24,7 @@ void tui_stop();
 char *tui_ask();
 char *tui_pask(char *prefix);
 void tui_parse(char *s, int *argc, char ***argv);
-void tui_argv_free(int argc, char ***argv);
+void tui_argv_free(int *argc, char ***argv);
 char *tui_argv_pull(int *argc, char ***argv);
 
 #endif // !TUI

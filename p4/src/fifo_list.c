@@ -1,9 +1,3 @@
-/*
- * fifo:
- * new items will be added at the tail of the list.
- * on item removal, the head will be removed first
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +18,9 @@ void print_items();
 int count_items();
 void free_items();
 
+void h_exit();
+void h_count();
+
 int main(int argc, char **argv) {
   if (argc > 1) {
     char *path = argv[1];
@@ -34,16 +31,41 @@ int main(int argc, char **argv) {
     }
 
     StudentData *student = NULL;
-    while ((student = fsd_read_one(file)) != NULL) {
+    while ((student = sd_fread_one(file)) != NULL) {
       add_item(student);
     }
     fclose(file);
+    printf("found %i items in %s\n\n", count_items(), path);
   }
-  printf("count: %i\n", count_items());
-  ListItem *item = pop_item();
-  if (item != NULL)
-    sd_print(item->data);
-  printf("count: %i\n", count_items());
+
+  tui_add_handler(h_exit, "exit",
+                  "zakonczenie programu, usuniecie wszytkich elementow");
+  tui_add_handler(h_count, "count",
+                  "sprawdzanie liczby elementow w strukturze");
+
+  tui_add_handler(print_items, "print", "wypisanie wszystkich elementow");
+  tui_add_handler(free_items, "free", "usuniecie calej struktury");
+
+  while (tui_should_run()) {
+    char *input = tui_pask("[FIFO l_list] ");
+    int m_argc = 0;
+    char **m_argv = NULL;
+    tui_parse(input, &m_argc, &m_argv);
+
+    if (m_argc > 0) {
+      char *trigger = tui_argv_pull(&m_argc, &m_argv);
+      if (!tui_execute(trigger, m_argc, m_argv)) {
+        printf("couldn't recognise '%s'\n\n", trigger);
+        tui_print_handlers();
+      }
+      free(trigger);
+    } else {
+      tui_print_handlers();
+    }
+    tui_argv_free(&m_argc, &m_argv);
+  }
+
+  tui_clean();
 }
 
 int add_item(StudentData *data) {
@@ -72,13 +94,15 @@ ListItem *pop_item() {
   return out;
 }
 
-// TODO: will change
 void print_items() {
+  int i = 0;
   ListItem *tmp = head;
   while (tmp != NULL) {
-    sd_print_horizontal(tmp->data, ',');
+    printf("%i: ", i);
+    sd_print_horizontal(tmp->data, "\t");
     printf("\n");
     tmp = tmp->next;
+    i++;
   }
 }
 
@@ -116,3 +140,11 @@ void free_items() {
     head = tmp;
   }
 }
+
+// TUI HANDLERS
+void h_exit() {
+  free_items();
+  tui_stop();
+}
+
+void h_count() { printf("items count: %i\n", count_items()); }
