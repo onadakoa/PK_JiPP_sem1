@@ -51,6 +51,8 @@ int main(int argc, char **argv) {
     int m_argc = 0;
     char **m_argv = NULL;
     tui_parse(input, &m_argc, &m_argv);
+    free(input);
+    input = NULL;
 
     if (m_argc > 0) {
       char *trigger = tui_argv_pull(&m_argc, &m_argv);
