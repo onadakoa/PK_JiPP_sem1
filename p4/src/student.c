@@ -49,6 +49,38 @@ StudentData *sd_fread_one(FILE *stream) {
   return out;
 }
 
+StudentData *sd_ask() {
+  printf("NAME: ");
+  char *name = malloc(255);
+  scanf("%254s", name);
+
+  printf("SURNAME: ");
+  char *surname = malloc(255);
+  scanf("%254s", surname);
+
+  printf("BIRTH_YEAR: ");
+  char *year = malloc(255);
+  scanf("%254s", year);
+  if (strlen(year) != 4) {
+    printf("Note: birth years are usually 4 digits long");
+  }
+
+  StudentData *data = malloc(sizeof(StudentData));
+  data->name = malloc(strlen(name) + 1);
+  strcpy(data->name, name);
+  free(name);
+
+  data->surname = malloc(strlen(surname) + 1);
+  strcpy(data->surname, surname);
+  free(surname);
+
+  data->birth_year = malloc(strlen(year) + 1);
+  strcpy(data->birth_year, year);
+  free(year);
+
+  return data;
+}
+
 void sd_print(StudentData *obj) {
   printf("%s\n%s\n%s\n", obj->name, obj->surname, obj->birth_year);
 }

@@ -19,6 +19,7 @@ typedef struct {
 } StudentData;
 
 StudentData *sd_fread_one(FILE *stream);
+StudentData *sd_ask();
 
 void sd_print(StudentData *obj);
 void sd_print_horizontal(StudentData *obj, const char *separator);
