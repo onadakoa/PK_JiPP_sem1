@@ -17,9 +17,13 @@ ListItem *search_item(StudentDataField field, char *value);
 void print_items();
 int count_items();
 void free_items();
+void free_item(ListItem **item);
 
 void h_exit();
 void h_count();
+void h_pop();
+void h_add();
+void h_find(int argc, char **argv);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -42,6 +46,13 @@ int main(int argc, char **argv) {
                   "zakonczenie programu, usuniecie wszytkich elementow");
   tui_add_handler(h_count, "count",
                   "sprawdzanie liczby elementow w strukturze");
+  tui_add_handler(h_pop, "pop", "pobranie elementu (oraz usuniecie go)");
+  tui_add_handler(h_add, "add", "dodawanie elementu");
+
+  tui_add_handler(
+      h_find, "find",
+      "wyszukanie konkretnego elementu po okreslonym polu (NAME, "
+      "SURNAME, BIRTH_YEAR)\n\t\tUsage: find <field_name> <phrase>");
 
   tui_add_handler(print_items, "print", "wypisanie wszystkich elementow");
   tui_add_handler(free_items, "free", "usuniecie calej struktury");
@@ -143,6 +154,12 @@ void free_items() {
   }
 }
 
+void free_item(ListItem **item) {
+  sd_free(&(*item)->data);
+  free(*item);
+  (*item) = NULL;
+}
+
 // TUI HANDLERS
 void h_exit() {
   free_items();
@@ -150,3 +167,70 @@ void h_exit() {
 }
 
 void h_count() { printf("items count: %i\n", count_items()); }
+
+void h_pop() {
+  ListItem *item = pop_item();
+
+  sd_print_horizontal(item->data, "\t");
+  printf("\n");
+
+  free_item(&item);
+}
+
+void h_add() {
+  printf("\ncreating StudentData Item:\n");
+  StudentData *data = sd_ask();
+
+  add_item(data);
+  printf("item added");
+  tui_clear_input_buffer();
+}
+
+void h_find(int argc, char **argv) {
+  if (argc <= 1) {
+    printf("not enough arguments");
+    return;
+  }
+  char *field_name = argv[0];
+  argc--;
+  argv = &argv[1];
+
+  int field_id = -1;
+  for (int i = 0; i < 3; i++) {
+    if (strcmp(StudentDataFieldName[i], field_name) == 0) {
+      field_id = i;
+      break;
+    }
+  }
+  if (field_id == -1) {
+    printf("couldn't recognise '%s' as field", field_name);
+    return;
+  }
+
+  int final_length = argc;
+  for (int i = 0; i < argc; i++) {
+    final_length += strlen(argv[i]);
+  }
+
+  char *phrase = malloc(final_length);
+  strcpy(phrase, "");
+  for (int i = 0; i < argc; i++) {
+    strcat(phrase, argv[i]);
+    if (i < argc - 1)
+      strcat(phrase, " ");
+  }
+
+  printf("searched phrase:\t%s\n", phrase);
+  printf("in field:\t%s\n", StudentDataFieldName[field_id]);
+
+  ListItem *found_item = search_item(field_id, phrase);
+  if (found_item != NULL) {
+    printf("found:\n");
+    sd_print(found_item->data);
+    free(phrase);
+    return;
+  }
+
+  printf("no item found\n");
+  free(phrase);
+}
