@@ -19,11 +19,16 @@ int count_items();
 void free_items();
 void free_item(ListItem **item);
 
+int write_items(FILE *stream);
+
 void h_exit();
 void h_count();
 void h_pop();
 void h_add();
 void h_find(int argc, char **argv);
+
+void h_read(int argc, char **argv);
+void h_write(int argc, char **argv);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -56,6 +61,10 @@ int main(int argc, char **argv) {
 
   tui_add_handler(print_items, "print", "wypisanie wszystkich elementow");
   tui_add_handler(free_items, "free", "usuniecie calej struktury");
+
+  tui_add_handler(
+      h_write, "write",
+      "zapis struktury do pliku binarnego\n\t\tUsage: write <path>");
 
   while (tui_should_run()) {
     char *input = tui_pask("[FIFO l_list] ");
@@ -160,6 +169,28 @@ void free_item(ListItem **item) {
   (*item) = NULL;
 }
 
+int write_items(FILE *stream) {
+  if (stream == NULL)
+    return 1;
+
+  ListItem *tmp = head;
+  while (tmp != NULL) {
+    StudentData *data = tmp->data;
+
+    char *fields[3] = {data->name, data->surname, data->birth_year};
+    for (int i = 0; i < 3; i++) {
+      int len = strlen(fields[i]);
+
+      fwrite(&len, sizeof(int), 1, stream);
+      fwrite(fields[i], 1, len, stream);
+    }
+
+    tmp = tmp->next;
+  }
+
+  return 0;
+}
+
 // TUI HANDLERS
 void h_exit() {
   free_items();
@@ -233,4 +264,20 @@ void h_find(int argc, char **argv) {
 
   printf("no item found\n");
   free(phrase);
+}
+
+void h_write(int argc, char **argv) {
+  if (argc != 1) {
+    printf("not enough arguments\n");
+    return;
+  }
+  char *path = argv[0];
+  FILE *file = fopen(path, "wb");
+  if (file == NULL) {
+    printf("couldn't open/create file '%s'", path);
+    return;
+  }
+  printf("using '%s'\n", path);
+
+  write_items(file);
 }
