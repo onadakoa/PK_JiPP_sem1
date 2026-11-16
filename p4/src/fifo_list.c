@@ -20,6 +20,7 @@ void free_items();
 void free_item(ListItem **item);
 
 int write_items(FILE *stream);
+int read_items(FILE *stream);
 
 void h_exit();
 void h_count();
@@ -65,6 +66,9 @@ int main(int argc, char **argv) {
   tui_add_handler(
       h_write, "write",
       "zapis struktury do pliku binarnego\n\t\tUsage: write <path>");
+  tui_add_handler(
+      h_read, "read",
+      "odczyt struktury z pliku binarnego\n\t\tUsage: read <path>");
 
   while (tui_should_run()) {
     char *input = tui_pask("[FIFO l_list] ");
@@ -191,6 +195,48 @@ int write_items(FILE *stream) {
   return 0;
 }
 
+int read_items(FILE *stream) {
+  if (stream == NULL)
+    return 1;
+  if (head != NULL)
+    return 2;
+
+  ListItem **tmp_head = &head;
+
+  while (1) {
+    StudentData *data = calloc(1, sizeof(StudentData));
+    char **fields[3] = {&data->name, &data->surname, &data->birth_year};
+    for (int i = 0; i < 3; i++) {
+      char *str = sd_read_fstring(stream);
+      if (str == NULL) {
+        sd_free(&data);
+
+        if (feof(stream)) {
+          printf("finished file\n");
+          return 0;
+        } else {
+          printf("error handling file\n");
+          return 1;
+        }
+      }
+      *fields[i] = str;
+    }
+
+    ListItem *item = malloc(sizeof(ListItem));
+    item->data = data;
+    item->next = NULL;
+
+    if (*tmp_head == NULL) {
+      *tmp_head = item;
+    } else {
+      (*tmp_head)->next = item;
+      tmp_head = &(*tmp_head)->next;
+    }
+  }
+
+  return 0;
+}
+
 // TUI HANDLERS
 void h_exit() {
   free_items();
@@ -280,4 +326,35 @@ void h_write(int argc, char **argv) {
   printf("using '%s'\n", path);
 
   write_items(file);
+  fclose(file);
+}
+
+void h_read(int argc, char **argv) {
+  if (argc != 1) {
+    printf("not enough arguments\n");
+    return;
+  }
+
+  if (head != NULL) {
+    printf("your stack isn't empty. do you want to erase it? [y/n]: ");
+    char option = getchar();
+    tui_clear_input_buffer();
+
+    if (option != 'y')
+      return;
+    free_items();
+  }
+
+  char *path = argv[0];
+  FILE *file = fopen(path, "rb");
+  if (file == NULL) {
+    printf("couldn't open/create file '%s'", path);
+    return;
+  }
+  printf("using '%s'\n", path);
+
+  if (read_items(file) == 0) {
+    printf("new count: %i\n", count_items());
+  }
+  fclose(file);
 }
