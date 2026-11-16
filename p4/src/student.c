@@ -102,3 +102,21 @@ void sd_free(StudentData **obj) {
   free((*obj));
   obj = NULL;
 }
+
+char *sd_read_fstring(FILE *stream) {
+  if (stream == NULL)
+    return NULL;
+  int len = 0;
+
+  if (fread(&len, sizeof(int), 1, stream) != 1 || len < 0)
+    return NULL;
+
+  char *str = malloc(len + 1);
+  if (fread(str, 1, len, stream) != len) {
+    free(str);
+    return NULL;
+  }
+  str[len] = '\0';
+
+  return str;
+}

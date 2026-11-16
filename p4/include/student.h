@@ -25,4 +25,6 @@ void sd_print(StudentData *obj);
 void sd_print_horizontal(StudentData *obj, const char *separator);
 
 void sd_free(StudentData **obj);
+
+char *sd_read_fstring(FILE *stream);
 #endif // !STUDENTS_H
