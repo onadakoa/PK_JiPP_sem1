@@ -247,6 +247,10 @@ void h_count() { printf("items count: %i\n", count_items()); }
 
 void h_pop() {
   ListItem *item = pop_item();
+  if (item == NULL) {
+    printf("couldn't pop item\n");
+    return;
+  }
 
   sd_print_horizontal(item->data, "\t");
   printf("\n");

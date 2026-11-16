@@ -9,14 +9,14 @@ StudentData *sd_fread_one(FILE *stream) {
   if (stream == NULL)
     return NULL;
 
-  StudentData *out = malloc(sizeof(StudentData));
+  StudentData *out = calloc(1, sizeof(StudentData));
 
   char *line = malloc(MAX_LINE_LENGTH);
   for (int i = 0; i < 3; i++) {
 
     if (fgets(line, MAX_LINE_LENGTH, stream) == NULL) {
       free(line);
-      free(out);
+      sd_free(&out);
       return NULL;
     }
 
@@ -100,7 +100,7 @@ void sd_free(StudentData **obj) {
   free((*obj)->surname);
   free((*obj)->birth_year);
   free((*obj));
-  obj = NULL;
+  *obj = NULL;
 }
 
 char *sd_read_fstring(FILE *stream) {
