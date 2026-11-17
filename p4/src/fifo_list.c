@@ -2,12 +2,37 @@
 #include <stdlib.h>
 #include <string.h>
 #include <student.h>
-#include <tui.h>
 
 typedef struct _LI {
   StudentData *data;
   struct _LI *next;
 } ListItem;
+
+enum MY_INTERF_EN {
+  INTERF_PUSH = 0,
+  INTERF_POP,
+  INTERF_CLEAR,
+  INTERF_FIND,
+  INTERF_SAVE_TO_FILE,
+  INTERF_READ_FROM_FILE,
+  INTERF_DISPLAY,
+  INTERF_COUNT,
+  INTERF_STOP,
+  INTERF_TOT
+};
+char strtab[9][20] = {
+    "0 - push",           // INTERF_PUSH
+    "1 - pop",            // INTERF_POP
+    "2 - clear",          // INTERF_CLEAR
+    "3 - find field",     // INTERF_find
+    "4 - save to file",   // INTERF_SAVE_TO_FILE
+    "5 - read from file", // INTERF_READ_FROM_FILE,
+    "6 - print",          // INTERF_DISPLAY
+    "7 - count",          // INTERF_COUNT
+    "8 - finish"          // INTERF_STOP
+};
+void print_menu();
+int ask_menu(const char *prompt);
 
 ListItem *head = NULL;
 
@@ -26,10 +51,10 @@ void h_exit();
 void h_count();
 void h_pop();
 void h_add();
-void h_find(int argc, char **argv);
+void h_find();
 
-void h_read(int argc, char **argv);
-void h_write(int argc, char **argv);
+void h_read();
+void h_write();
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -48,50 +73,48 @@ int main(int argc, char **argv) {
     printf("found %i items in %s\n\n", count_items(), path);
   }
 
-  tui_add_handler(h_exit, "exit",
-                  "zakonczenie programu, usuniecie wszytkich elementow");
-  tui_add_handler(h_count, "count",
-                  "sprawdzanie liczby elementow w strukturze");
-  tui_add_handler(h_pop, "pop", "pobranie elementu (oraz usuniecie go)");
-  tui_add_handler(h_add, "add", "dodawanie elementu");
+  print_menu();
+  int option = 0;
+  while ((option = ask_menu("[FIFO l_list]: ")) >= 0) {
+    switch (option) {
+    case INTERF_PUSH:
+      h_add();
+      break;
+    case INTERF_POP:
+      h_pop();
+      break;
+    case INTERF_CLEAR:
+      free_items();
+      break;
+    case INTERF_FIND:
+      h_find();
+      break;
+    case INTERF_SAVE_TO_FILE:
+      h_write();
+      break;
+    case INTERF_READ_FROM_FILE:
+      h_read();
+      break;
+    case INTERF_DISPLAY:
+      print_items();
+      break;
+    case INTERF_COUNT:
+      printf("count: %i\n", count_items());
+      break;
+    case INTERF_STOP:
+      free_items();
+      break;
 
-  tui_add_handler(
-      h_find, "find",
-      "wyszukanie konkretnego elementu po okreslonym polu (NAME, "
-      "SURNAME, BIRTH_YEAR)\n\t\tUsage: find <field_name> <phrase>");
-
-  tui_add_handler(print_items, "print", "wypisanie wszystkich elementow");
-  tui_add_handler(free_items, "free", "usuniecie calej struktury");
-
-  tui_add_handler(
-      h_write, "write",
-      "zapis struktury do pliku binarnego\n\t\tUsage: write <path>");
-  tui_add_handler(
-      h_read, "read",
-      "odczyt struktury z pliku binarnego\n\t\tUsage: read <path>");
-
-  while (tui_should_run()) {
-    char *input = tui_pask("[FIFO l_list] ");
-    int m_argc = 0;
-    char **m_argv = NULL;
-    tui_parse(input, &m_argc, &m_argv);
-    free(input);
-    input = NULL;
-
-    if (m_argc > 0) {
-      char *trigger = tui_argv_pull(&m_argc, &m_argv);
-      if (!tui_execute(trigger, m_argc, m_argv)) {
-        printf("couldn't recognise '%s'\n\n", trigger);
-        tui_print_handlers();
-      }
-      free(trigger);
-    } else {
-      tui_print_handlers();
+    default:
+      printf("wrong menu option\n");
+      print_menu();
     }
-    tui_argv_free(&m_argc, &m_argv);
+
+    if (option == INTERF_STOP)
+      break;
   }
 
-  tui_clean();
+  return 0;
 }
 
 int add_item(StudentData *data) {
@@ -240,7 +263,7 @@ int read_items(FILE *stream) {
 // TUI HANDLERS
 void h_exit() {
   free_items();
-  tui_stop();
+  // tui_stop();
 }
 
 void h_count() { printf("items count: %i\n", count_items()); }
@@ -264,42 +287,22 @@ void h_add() {
 
   add_item(data);
   printf("item added");
-  tui_clear_input_buffer();
+  // tui_clear_input_buffer();
 }
 
-void h_find(int argc, char **argv) {
-  if (argc <= 1) {
-    printf("not enough arguments");
+void h_find() {
+  char phrase[64];
+  printf("prompt searched field\navailable fields:\n");
+  printf("\t0 - name\n");
+  printf("\t1 - surname\n");
+  printf("\t2 - birth_year\n");
+  int field_id = ask_menu("field: ");
+  if (field_id < 0 || field_id > 2) {
+    printf("wrong menu option\n");
     return;
   }
-  char *field_name = argv[0];
-  argc--;
-  argv = &argv[1];
-
-  int field_id = -1;
-  for (int i = 0; i < 3; i++) {
-    if (strcmp(StudentDataFieldName[i], field_name) == 0) {
-      field_id = i;
-      break;
-    }
-  }
-  if (field_id == -1) {
-    printf("couldn't recognise '%s' as field", field_name);
-    return;
-  }
-
-  int final_length = argc;
-  for (int i = 0; i < argc; i++) {
-    final_length += strlen(argv[i]);
-  }
-
-  char *phrase = malloc(final_length);
-  strcpy(phrase, "");
-  for (int i = 0; i < argc; i++) {
-    strcat(phrase, argv[i]);
-    if (i < argc - 1)
-      strcat(phrase, " ");
-  }
+  printf("searched phrase: ");
+  scanf("%s", phrase);
 
   printf("searched phrase:\t%s\n", phrase);
   printf("in field:\t%s\n", StudentDataFieldName[field_id]);
@@ -308,20 +311,17 @@ void h_find(int argc, char **argv) {
   if (found_item != NULL) {
     printf("found:\n");
     sd_print(found_item->data);
-    free(phrase);
     return;
   }
 
   printf("no item found\n");
-  free(phrase);
 }
 
-void h_write(int argc, char **argv) {
-  if (argc != 1) {
-    printf("not enough arguments\n");
-    return;
-  }
-  char *path = argv[0];
+void h_write() {
+  char path[255];
+  printf("file path: ");
+  scanf("%s", path);
+
   FILE *file = fopen(path, "wb");
   if (file == NULL) {
     printf("couldn't open/create file '%s'", path);
@@ -333,23 +333,20 @@ void h_write(int argc, char **argv) {
   fclose(file);
 }
 
-void h_read(int argc, char **argv) {
-  if (argc != 1) {
-    printf("not enough arguments\n");
-    return;
-  }
-
+void h_read() {
   if (head != NULL) {
     printf("your stack isn't empty. do you want to erase it? [y/n]: ");
-    char option = getchar();
-    tui_clear_input_buffer();
+    char option[4];
+    scanf("%s", option);
 
-    if (option != 'y')
+    if (option[0] != 'y')
       return;
     free_items();
   }
+  char path[255];
+  printf("file path: ");
+  scanf("%s", path);
 
-  char *path = argv[0];
   FILE *file = fopen(path, "rb");
   if (file == NULL) {
     printf("couldn't open/create file '%s'", path);
@@ -361,4 +358,27 @@ void h_read(int argc, char **argv) {
     printf("new count: %i\n", count_items());
   }
   fclose(file);
+}
+
+void print_menu() {
+  printf("\nmenu:\n");
+  for (int i = 0; i < 9; i++) {
+    printf("\t%s\n", strtab[i]);
+  }
+}
+
+int ask_menu(const char *prompt) {
+  char option[4] = "";
+  while (1) {
+    printf("\n%s", prompt);
+    scanf("%s", option);
+    if (option[0] < '0' || option[0] > '9') {
+      printf("wrong menu argument\n");
+      print_menu();
+      continue;
+    }
+    break;
+  }
+
+  return option[0] - '0';
 }
