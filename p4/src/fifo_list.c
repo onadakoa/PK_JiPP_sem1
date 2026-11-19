@@ -2,37 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <student.h>
+#include <tui.h>
 
 typedef struct _LI {
   StudentData *data;
   struct _LI *next;
 } ListItem;
-
-enum MY_INTERF_EN {
-  INTERF_PUSH = 0,
-  INTERF_POP,
-  INTERF_CLEAR,
-  INTERF_FIND,
-  INTERF_SAVE_TO_FILE,
-  INTERF_READ_FROM_FILE,
-  INTERF_DISPLAY,
-  INTERF_COUNT,
-  INTERF_STOP,
-  INTERF_TOT
-};
-char strtab[9][20] = {
-    "0 - push",           // INTERF_PUSH
-    "1 - pop",            // INTERF_POP
-    "2 - clear",          // INTERF_CLEAR
-    "3 - find field",     // INTERF_find
-    "4 - save to file",   // INTERF_SAVE_TO_FILE
-    "5 - read from file", // INTERF_READ_FROM_FILE,
-    "6 - print",          // INTERF_DISPLAY
-    "7 - count",          // INTERF_COUNT
-    "8 - finish"          // INTERF_STOP
-};
-void print_menu();
-int ask_menu(const char *prompt);
 
 ListItem *head = NULL;
 
@@ -75,7 +50,7 @@ int main(int argc, char **argv) {
 
   print_menu();
   int option = 0;
-  while ((option = ask_menu("[FIFO l_list]: ")) >= 0) {
+  while ((option = ask_menu("[FIFO l_list] ")) >= 0) {
     switch (option) {
     case INTERF_PUSH:
       h_add();
@@ -291,7 +266,7 @@ void h_add() {
 }
 
 void h_find() {
-  char phrase[64];
+  char phrase[255];
   printf("prompt searched field\navailable fields:\n");
   printf("\t0 - name\n");
   printf("\t1 - surname\n");
@@ -302,7 +277,7 @@ void h_find() {
     return;
   }
   printf("searched phrase: ");
-  scanf("%s", phrase);
+  scanf("%252s", phrase);
 
   printf("searched phrase:\t%s\n", phrase);
   printf("in field:\t%s\n", StudentDataFieldName[field_id]);
@@ -358,27 +333,4 @@ void h_read() {
     printf("new count: %i\n", count_items());
   }
   fclose(file);
-}
-
-void print_menu() {
-  printf("\nmenu:\n");
-  for (int i = 0; i < 9; i++) {
-    printf("\t%s\n", strtab[i]);
-  }
-}
-
-int ask_menu(const char *prompt) {
-  char option[4] = "";
-  while (1) {
-    printf("\n%s", prompt);
-    scanf("%s", option);
-    if (option[0] < '0' || option[0] > '9') {
-      printf("wrong menu argument\n");
-      print_menu();
-      continue;
-    }
-    break;
-  }
-
-  return option[0] - '0';
 }
