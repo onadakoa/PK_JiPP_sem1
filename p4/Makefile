@@ -20,3 +20,6 @@ fifo_list: $(SOURCE_DIR)/fifo_list.c $(OBJS)
 
 lifo_list: $(SOURCE_DIR)/lifo_list.c $(OBJS)
 	$(CC) $^ -o $@ $(CFLAGS)
+
+fifo_array: $(SOURCE_DIR)/fifo_array.c $(OBJS)
+	$(CC) $^ -o $@ $(CFLAGS)
