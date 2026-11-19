@@ -62,7 +62,7 @@ StudentData *sd_ask() {
   char *year = malloc(255);
   scanf("%254s", year);
   if (strlen(year) != 4) {
-    printf("Note: birth years are usually 4 digits long");
+    printf("Note: birth years are usually 4 digits long\n");
   }
 
   StudentData *data = malloc(sizeof(StudentData));
