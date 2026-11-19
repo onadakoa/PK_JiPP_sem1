@@ -1,5 +1,6 @@
 #include "student.h"
 #include "tui.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +20,12 @@ int count_items();
 void free_items();
 void free_item(ListItem **item);
 
+int write_items(FILE *stream);
+int read_items(FILE *stream);
+
 void h_find();
+void h_write();
+void h_read();
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -66,10 +72,10 @@ int main(int argc, char **argv) {
       h_find();
       break;
     case INTERF_SAVE_TO_FILE:
-      // h_write();
+      h_write();
       break;
     case INTERF_READ_FROM_FILE:
-      // h_read();
+      h_read();
       break;
     case INTERF_DISPLAY:
       print_items();
@@ -184,4 +190,108 @@ void h_find() {
   }
 
   printf("no item found\n");
+}
+
+void h_write() {
+  char path[255];
+  printf("file path: ");
+  scanf("%s", path);
+
+  FILE *file = fopen(path, "wb");
+  if (file == NULL) {
+    printf("couldn't write to '%s'\n", path);
+    return;
+  }
+  printf("using '%s'\n", path);
+
+  write_items(file);
+  fclose(file);
+}
+
+int write_items(FILE *stream) {
+  if (stream == NULL)
+    return -1;
+
+  ListItem *tmp = head;
+  while (tmp != NULL) {
+    char *fields[3] = {tmp->data->name, tmp->data->surname,
+                       tmp->data->birth_year};
+    for (int i = 0; i < 3; i++) {
+      int len = strlen(fields[i]);
+
+      fwrite(&len, sizeof(int), 1, stream);
+      fwrite(fields[i], 1, len, stream);
+    }
+
+    tmp = tmp->next;
+  }
+  return 0;
+}
+
+void h_read() {
+  if (head != NULL) {
+    printf("your stack isn't empty. do you want to erase it? [y/n]: ");
+    char option[4];
+    scanf("%s", option);
+
+    if (option[0] != 'y')
+      return;
+    free_items();
+  }
+
+  char path[255];
+  printf("file path: ");
+  scanf("%s", path);
+
+  FILE *file = fopen(path, "rb");
+  if (file == NULL) {
+    printf("couldn't open '%s'\n", path);
+    return;
+  }
+  printf("using '%s'\n", path);
+
+  read_items(file);
+  fclose(file);
+  printf("new count: %i\n", count_items());
+}
+
+int read_items(FILE *stream) {
+  if (stream == NULL)
+    return 1;
+  if (head != NULL)
+    return 2;
+
+  ListItem **tmp_head = &head;
+
+  while (1) {
+    StudentData *data = calloc(1, sizeof(StudentData));
+    char **fields[3] = {&data->name, &data->surname, &data->birth_year};
+    for (int i = 0; i < 3; i++) {
+      char *str = sd_read_fstring(stream);
+      if (str == NULL) {
+        sd_free(&data);
+
+        if (feof(stream)) {
+          printf("finished file\n");
+          return 0;
+        } else {
+          printf("error handling file\n");
+          return 1;
+        }
+      }
+      *fields[i] = str;
+    }
+
+    ListItem *item = malloc(sizeof(ListItem));
+    item->data = data;
+    item->next = NULL;
+
+    if (*tmp_head == NULL) {
+      *tmp_head = item;
+    } else {
+      (*tmp_head)->next = item;
+      tmp_head = &item->next;
+    }
+  }
+  return 0;
 }
