@@ -102,6 +102,11 @@ void sd_free(StudentData **obj) {
   free((*obj));
   *obj = NULL;
 }
+void sd_free_content(StudentData *obj) {
+  free(obj->name);
+  free(obj->surname);
+  free(obj->birth_year);
+}
 
 char *sd_read_fstring(FILE *stream) {
   if (stream == NULL)
