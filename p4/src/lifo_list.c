@@ -1,5 +1,6 @@
 #include "student.h"
 #include "tui.h"
+#include <linux/limits.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -166,7 +167,6 @@ void free_items() {
 }
 
 void h_find() {
-  char phrase[255];
   printf("prompt searched field\navailable fields:\n");
   printf("\t0 - name\n");
   printf("\t1 - surname\n");
@@ -177,12 +177,13 @@ void h_find() {
     return;
   }
   printf("searched phrase: ");
-  scanf("%252s", phrase);
+  char *phrase = line_input();
 
   printf("searched phrase:\t%s\n", phrase);
   printf("in field:\t%s\n", StudentDataFieldName[field_id]);
 
   ListItem *found_item = search_item(field_id, phrase);
+  free(phrase);
   if (found_item != NULL) {
     printf("found:\n");
     sd_print(found_item->data);
@@ -193,18 +194,19 @@ void h_find() {
 }
 
 void h_write() {
-  char path[255];
   printf("file path: ");
-  scanf("%s", path);
+  char *path = line_input();
 
   FILE *file = fopen(path, "wb");
   if (file == NULL) {
     printf("couldn't write to '%s'\n", path);
+    free(path);
     return;
   }
   printf("using '%s'\n", path);
 
   write_items(file);
+  free(path);
   fclose(file);
 }
 
@@ -231,26 +233,25 @@ int write_items(FILE *stream) {
 void h_read() {
   if (head != NULL) {
     printf("your stack isn't empty. do you want to erase it? [y/n]: ");
-    char option[4];
-    scanf("%s", option);
-
-    if (option[0] != 'y')
+    int option = ask_menu("[y/n]: ");
+    if (option != 1)
       return;
     free_items();
   }
 
-  char path[255];
   printf("file path: ");
-  scanf("%s", path);
+  char *path = line_input();
 
   FILE *file = fopen(path, "rb");
   if (file == NULL) {
     printf("couldn't open '%s'\n", path);
+    free(path);
     return;
   }
   printf("using '%s'\n", path);
 
   read_items(file);
+  free(path);
   fclose(file);
   printf("new count: %i\n", count_items());
 }

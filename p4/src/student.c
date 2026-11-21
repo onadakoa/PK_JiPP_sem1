@@ -1,7 +1,10 @@
+#include "tui.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <student.h>
+
+#define SD_MAX_FIELD_LENGTH 1024
 
 char *StudentDataFieldName[3] = {"NAME", "SURNAME", "BIRTH_YEAR"};
 
@@ -51,16 +54,13 @@ StudentData *sd_fread_one(FILE *stream) {
 
 StudentData *sd_ask() {
   printf("NAME: ");
-  char *name = malloc(255);
-  scanf("%254s", name);
+  char *name = line_input();
 
   printf("SURNAME: ");
-  char *surname = malloc(255);
-  scanf("%254s", surname);
+  char *surname = line_input();
 
   printf("BIRTH_YEAR: ");
-  char *year = malloc(255);
-  scanf("%254s", year);
+  char *year = line_input();
   if (strlen(year) != 4) {
     printf("Note: birth years are usually 4 digits long\n");
   }

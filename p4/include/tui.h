@@ -17,5 +17,6 @@ extern char strtab[9][20];
 
 extern void print_menu();
 extern int ask_menu(const char *prompt);
+extern char *line_input();
 
 #endif // !TUI_H

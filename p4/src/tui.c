@@ -1,5 +1,10 @@
+#include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <tui.h>
+
+#define TUI_MAX_LINE_INPUT 1024
 
 char strtab[9][20] = {
     "0 - push",           // INTERF_PUSH
@@ -24,7 +29,9 @@ int ask_menu(const char *prompt) {
   char option[4] = "";
   while (1) {
     printf("\n%s", prompt);
-    scanf("%s", option);
+    if (fgets(option, sizeof(option), stdin) == NULL) {
+      return -1;
+    }
     if (option[0] < '0' || option[0] > '9') {
       printf("wrong menu argument\n");
       print_menu();
@@ -34,4 +41,30 @@ int ask_menu(const char *prompt) {
   }
 
   return option[0] - '0';
+}
+
+void clear_stdin() {
+  int c;
+  while ((c = getc(stdin)) != '\n' && c != EOF) {
+  }
+}
+
+char *line_input() {
+  char line[TUI_MAX_LINE_INPUT];
+  if (fgets(line, TUI_MAX_LINE_INPUT, stdin) == NULL) {
+    printf("error handling input\n");
+    return NULL;
+  }
+  size_t len = strlen(line);
+  if (line[len - 1] == '\n') {
+    line[len - 1] = '\0';
+  } else {
+    clear_stdin();
+  }
+
+  len = strlen(line);
+  char *out_line = malloc(len + 1);
+  memcpy(out_line, line, len + 1);
+
+  return out_line;
 }

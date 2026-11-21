@@ -266,7 +266,6 @@ void h_add() {
 }
 
 void h_find() {
-  char phrase[255];
   printf("prompt searched field\navailable fields:\n");
   printf("\t0 - name\n");
   printf("\t1 - surname\n");
@@ -277,7 +276,7 @@ void h_find() {
     return;
   }
   printf("searched phrase: ");
-  scanf("%252s", phrase);
+  char *phrase = line_input();
 
   printf("searched phrase:\t%s\n", phrase);
   printf("in field:\t%s\n", StudentDataFieldName[field_id]);
@@ -286,45 +285,47 @@ void h_find() {
   if (found_item != NULL) {
     printf("found:\n");
     sd_print(found_item->data);
+    free(phrase);
     return;
   }
 
+  free(phrase);
   printf("no item found\n");
 }
 
 void h_write() {
-  char path[255];
   printf("file path: ");
-  scanf("%s", path);
+  char *path = line_input();
 
   FILE *file = fopen(path, "wb");
   if (file == NULL) {
     printf("couldn't open/create file '%s'", path);
+    free(path);
     return;
   }
   printf("using '%s'\n", path);
 
   write_items(file);
+  free(path);
   fclose(file);
 }
 
 void h_read() {
   if (head != NULL) {
-    printf("your stack isn't empty. do you want to erase it? [y/n]: ");
-    char option[4];
-    scanf("%s", option);
+    printf("your stack isn't empty. do you want to erase it? ");
+    int option = ask_menu("[y/n]: ");
 
-    if (option[0] != 'y')
+    if (option != 1)
       return;
     free_items();
   }
-  char path[255];
   printf("file path: ");
-  scanf("%s", path);
+  char *path = line_input();
 
   FILE *file = fopen(path, "rb");
   if (file == NULL) {
     printf("couldn't open/create file '%s'", path);
+    free(path);
     return;
   }
   printf("using '%s'\n", path);
@@ -332,5 +333,6 @@ void h_read() {
   if (read_items(file) == 0) {
     printf("new count: %i\n", count_items());
   }
+  free(path);
   fclose(file);
 }
