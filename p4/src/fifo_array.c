@@ -102,7 +102,7 @@ void merge_left() {
 
 int add_item(StudentData data) {
   if (sd_array == NULL) {
-    sd_array = malloc(sizeof(StudentData));
+    sd_array = xmalloc(sizeof(StudentData));
     sd_array_len = 1;
     sd_array[0] = data;
     return 0;
@@ -248,6 +248,9 @@ void h_find() {
   }
   printf("searched phrase: ");
   char *phrase = line_input();
+  if (phrase == NULL) {
+    printf("cancelled\n");
+    return;
 
   printf("searched phrase:\t%s\n", phrase);
   printf("in field:\t%s\n", StudentDataFieldName[field_id]);
@@ -267,6 +270,10 @@ void h_find() {
 void h_write() {
   printf("file path: ");
   char *path = line_input();
+  if (path == NULL) {
+    printf("cancelled\n");
+    return;
+  }
 
   FILE *file = fopen(path, "wb");
   if (file == NULL) {
@@ -296,6 +303,10 @@ void h_read() {
   }
   printf("file path: ");
   char *path = line_input();
+  if (path == NULL) {
+    printf("cancelled\n");
+    return;
+  }
 
   FILE *file = fopen(path, "rb");
   if (file == NULL) {

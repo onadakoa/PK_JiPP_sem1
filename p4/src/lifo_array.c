@@ -277,6 +277,10 @@ void h_find() {
   }
   printf("searched phrase: ");
   char *phrase = line_input();
+  if (phrase == NULL) {
+    printf("cancelled\n");
+    return;
+  }
 
   printf("searched phrase:\t%s\n", phrase);
   printf("in field:\t%s\n", StudentDataFieldName[field_id]);
@@ -296,6 +300,9 @@ void h_find() {
 void h_write() {
   printf("file path: ");
   char *path = line_input();
+  if (path == NULL) {
+    printf("cancelled\n");
+  }
 
   FILE *file = fopen(path, "wb");
   if (file == NULL) {
@@ -325,6 +332,10 @@ void h_read() {
   }
   printf("file path: ");
   char *path = line_input();
+  if (path == NULL) {
+    free(path);
+    printf("cancelled\n");
+  }
 
   FILE *file = fopen(path, "rb");
   if (file == NULL) {

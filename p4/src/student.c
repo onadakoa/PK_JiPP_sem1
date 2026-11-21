@@ -1,4 +1,5 @@
 #include "tui.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,6 +51,14 @@ StudentData *sd_fread_one(FILE *stream) {
   return out;
 }
 
+char *sd_cpy_or_empty(char *a) {
+  if (a == NULL)
+    a = "";
+  size_t len = strlen(a);
+  char *out = xmalloc(len + 1);
+  memcpy(out, a, len + 1);
+  return out;
+}
 StudentData *sd_ask() {
   printf("NAME: ");
   char *name = line_input();
@@ -64,16 +73,14 @@ StudentData *sd_ask() {
   }
 
   StudentData *data = xmalloc(sizeof(StudentData));
-  data->name = xmalloc(strlen(name) + 1);
-  strcpy(data->name, name);
+
+  data->name = sd_cpy_or_empty(name);
   free(name);
 
-  data->surname = xmalloc(strlen(surname) + 1);
-  strcpy(data->surname, surname);
+  data->surname = sd_cpy_or_empty(surname);
   free(surname);
 
-  data->birth_year = xmalloc(strlen(year) + 1);
-  strcpy(data->birth_year, year);
+  data->birth_year = sd_cpy_or_empty(year);
   free(year);
 
   return data;
