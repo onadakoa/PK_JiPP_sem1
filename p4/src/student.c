@@ -12,6 +12,10 @@ StudentData *sd_fread_one(FILE *stream) {
     return NULL;
 
   StudentData *out = calloc(1, sizeof(StudentData));
+  if (out == NULL) {
+    fprintf(stderr, "Error: can't calloc\n");
+    exit(-1);
+  }
 
   char *line = xmalloc(MAX_LINE_LENGTH);
   for (int i = 0; i < 3; i++) {
@@ -126,9 +130,9 @@ void sd_free_content(StudentData *obj) {
 char *sd_read_fstring(FILE *stream) {
   if (stream == NULL)
     return NULL;
-  int len = 0;
+  size_t len = 0;
 
-  if (fread(&len, sizeof(int), 1, stream) != 1 || len < 0)
+  if (fread(&len, sizeof(size_t), 1, stream) != 1 || len == 0)
     return NULL;
 
   char *str = xmalloc(len + 1);

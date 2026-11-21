@@ -178,8 +178,8 @@ int write_items(FILE *stream) {
                        sd_array[i].birth_year};
 
     for (int i = 0; i < 3; i++) {
-      int len = strlen(fields[i]);
-      fwrite(&len, sizeof(int), 1, stream);
+      size_t len = strlen(fields[i]);
+      fwrite(&len, sizeof(size_t), 1, stream);
       fwrite(fields[i], 1, len, stream);
     }
   }

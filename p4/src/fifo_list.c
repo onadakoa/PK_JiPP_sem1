@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -182,9 +183,9 @@ int write_items(FILE *stream) {
 
     char *fields[3] = {data->name, data->surname, data->birth_year};
     for (int i = 0; i < 3; i++) {
-      int len = strlen(fields[i]);
+      size_t len = strlen(fields[i]);
 
-      fwrite(&len, sizeof(int), 1, stream);
+      fwrite(&len, sizeof(size_t), 1, stream);
       fwrite(fields[i], 1, len, stream);
     }
 

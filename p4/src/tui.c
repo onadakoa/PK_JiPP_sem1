@@ -76,7 +76,7 @@ char *line_input() {
 void *xmalloc(size_t size) {
   void *p = malloc(size);
   if (p == NULL) {
-    fprintf(stderr, "\n\nError: can't malloc\n\n'");
+    fprintf(stderr, "\n\nError: can't malloc\n\n");
     exit(-1);
   }
   return p;
