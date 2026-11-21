@@ -9,7 +9,6 @@ StudentData *sd_array = NULL;
 size_t sd_array_len = 0;
 
 void merge_left();
-void merge_right();
 
 int add_item(StudentData data);
 int pop_item(StudentData *data);
@@ -97,13 +96,6 @@ void merge_left() {
     return;
   for (int i = 0; i < count_items() - 1; i++) {
     sd_array[i] = sd_array[i + 1];
-  }
-}
-void merge_right() {
-  if (sd_array == NULL || sd_array_len <= 1)
-    return;
-  for (int i = 0; i < count_items() - 1; i++) {
-    sd_array[i + 1] = sd_array[i];
   }
 }
 

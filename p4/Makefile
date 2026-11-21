@@ -23,3 +23,6 @@ lifo_list: $(SOURCE_DIR)/lifo_list.c $(OBJS)
 
 fifo_array: $(SOURCE_DIR)/fifo_array.c $(OBJS)
 	$(CC) $^ -o $@ $(CFLAGS)
+
+lifo_array: $(SOURCE_DIR)/lifo_array.c $(OBJS)
+	$(CC) $^ -o $@ $(CFLAGS)
