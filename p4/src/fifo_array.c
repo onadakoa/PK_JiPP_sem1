@@ -89,6 +89,7 @@ int main(int argc, char **argv) {
   }
 
   free_items();
+  return 0;
 }
 
 void merge_left() {
@@ -281,6 +282,18 @@ void h_write() {
 }
 
 void h_read() {
+  if (sd_array != NULL || sd_array_len > 0) {
+    printf("your array isn't empty. do you want to erase it? [y/n]: ");
+    char *inp = line_input();
+    if (inp == NULL)
+      return;
+    char option = inp[0];
+    free(inp);
+
+    if (option != 'y')
+      return;
+    free_items();
+  }
   printf("file path: ");
   char *path = line_input();
 

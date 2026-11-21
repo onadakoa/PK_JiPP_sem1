@@ -1,6 +1,7 @@
 #ifndef TUI_H
 #define TUI_H
 
+#include <stddef.h>
 enum MY_INTERF_EN {
   INTERF_PUSH = 0,
   INTERF_POP,
@@ -18,5 +19,7 @@ extern char strtab[9][20];
 extern void print_menu();
 extern int ask_menu(const char *prompt);
 extern char *line_input();
+
+void *xmalloc(size_t size);
 
 #endif // !TUI_H

@@ -56,6 +56,8 @@ char *line_input() {
     return NULL;
   }
   size_t len = strlen(line);
+  if (len < 1)
+    return NULL;
   if (line[len - 1] == '\n') {
     line[len - 1] = '\0';
   } else {
@@ -63,8 +65,17 @@ char *line_input() {
   }
 
   len = strlen(line);
-  char *out_line = malloc(len + 1);
+  char *out_line = xmalloc(len + 1);
   memcpy(out_line, line, len + 1);
 
   return out_line;
+}
+
+void *xmalloc(size_t size) {
+  void *p = malloc(size);
+  if (p == NULL) {
+    fprintf(stderr, "\n\nError: can't malloc\n\n'");
+    exit(-1);
+  }
+  return p;
 }

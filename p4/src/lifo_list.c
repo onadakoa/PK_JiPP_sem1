@@ -96,13 +96,14 @@ int main(int argc, char **argv) {
       break;
   }
 
+  free_items();
   return 0;
 }
 
 int add_item(StudentData *data) {
   if (data == NULL)
     return -1;
-  ListItem *item = malloc(sizeof(ListItem));
+  ListItem *item = xmalloc(sizeof(ListItem));
   item->data = data;
   item->next = head;
 
@@ -233,8 +234,12 @@ int write_items(FILE *stream) {
 void h_read() {
   if (head != NULL) {
     printf("your stack isn't empty. do you want to erase it? [y/n]: ");
-    int option = ask_menu("[y/n]: ");
-    if (option != 1)
+    char *inp = line_input();
+    if (inp == NULL)
+      return;
+    char option = inp[0];
+    free(inp);
+    if (option != 'y')
       return;
     free_items();
   }
@@ -283,7 +288,7 @@ int read_items(FILE *stream) {
       *fields[i] = str;
     }
 
-    ListItem *item = malloc(sizeof(ListItem));
+    ListItem *item = xmalloc(sizeof(ListItem));
     item->data = data;
     item->next = NULL;
 

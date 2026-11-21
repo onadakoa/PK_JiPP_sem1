@@ -89,11 +89,12 @@ int main(int argc, char **argv) {
       break;
   }
 
+  free_items();
   return 0;
 }
 
 int add_item(StudentData *data) {
-  ListItem *item = malloc(sizeof(ListItem));
+  ListItem *item = xmalloc(sizeof(ListItem));
   item->data = data;
   item->next = NULL;
   if (head == NULL) {
@@ -220,7 +221,7 @@ int read_items(FILE *stream) {
       *fields[i] = str;
     }
 
-    ListItem *item = malloc(sizeof(ListItem));
+    ListItem *item = xmalloc(sizeof(ListItem));
     item->data = data;
     item->next = NULL;
 
@@ -312,10 +313,14 @@ void h_write() {
 
 void h_read() {
   if (head != NULL) {
-    printf("your stack isn't empty. do you want to erase it? ");
-    int option = ask_menu("[y/n]: ");
+    printf("your stack isn't empty. do you want to erase it? [y/n]: ");
+    char *inp = line_input();
+    if (inp == NULL)
+      return;
+    char option = inp[0];
+    free(inp);
 
-    if (option != 1)
+    if (option != 'y')
       return;
     free_items();
   }

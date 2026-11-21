@@ -1,5 +1,6 @@
 #include "student.h"
 #include "tui.h"
+#include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,11 +91,14 @@ int main(int argc, char **argv) {
     if (option == INTERF_STOP)
       break;
   }
+
+  free_items();
+  return 0;
 }
 
 int add_item(StudentData data) {
   if (sd_array == NULL || sd_array_len == 0) {
-    sd_array = malloc((sizeof(StudentData)));
+    sd_array = xmalloc((sizeof(StudentData)));
     sd_array_len = 1;
     sd_array[0] = data;
     return 0;
@@ -196,6 +200,23 @@ int write_items(FILE *stream) {
   return 0;
 }
 
+void push_item(StudentData item) {
+  if (sd_array == NULL || sd_array_len < 1) {
+    sd_array = xmalloc(sizeof(StudentData));
+    sd_array_len = 1;
+    sd_array[0] = item;
+    return;
+  }
+  sd_array_len++;
+  StudentData *tmp_array =
+      realloc(sd_array, sizeof(StudentData) * sd_array_len);
+  if (tmp_array == NULL) {
+    printf("\n\nError: can't realloc, no data changed\n\n");
+    return;
+  }
+  sd_array = tmp_array;
+  sd_array[sd_array_len - 1] = item;
+}
 int read_items(FILE *stream) {
   if (stream == NULL || sd_array != NULL || sd_array_len != 0)
     return -1;
@@ -219,7 +240,7 @@ int read_items(FILE *stream) {
       *fields[i] = str;
     }
 
-    add_item(it);
+    push_item(it);
   }
 
   return 0;
@@ -290,12 +311,25 @@ void h_write() {
 }
 
 void h_read() {
+  if (sd_array != NULL || sd_array_len > 0) {
+    printf("your array isn't empty. do you want to erase it? [y/n]: ");
+    char *inp = line_input();
+    if (inp == NULL)
+      return;
+    char option = inp[0];
+    free(inp);
+
+    if (option != 'y')
+      return;
+    free_items();
+  }
   printf("file path: ");
   char *path = line_input();
 
   FILE *file = fopen(path, "rb");
   if (file == NULL) {
     printf("couldn't open file '%s'", path);
+    free(path);
     return;
   }
   printf("using '%s'\n", path);
