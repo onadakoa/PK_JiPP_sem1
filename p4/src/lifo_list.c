@@ -52,6 +52,10 @@ int main(int argc, char **argv) {
     case INTERF_PUSH: {
       printf("creating StudentData Item:\n");
       StudentData *data = sd_ask();
+      if (data == NULL) {
+        printf("i won't add blank item\n");
+        break;
+      }
       add_item(data);
       printf("item added\n");
       break;

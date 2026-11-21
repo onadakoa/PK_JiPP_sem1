@@ -260,6 +260,10 @@ void h_pop() {
 void h_add() {
   printf("\ncreating StudentData Item:\n");
   StudentData *data = sd_ask();
+  if (data == NULL) {
+    printf("i won't add blank item\n");
+    return;
+  }
 
   add_item(data);
   printf("item added");

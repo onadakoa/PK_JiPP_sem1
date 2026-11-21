@@ -58,6 +58,8 @@ char *line_input() {
   size_t len = strlen(line);
   if (len < 1)
     return NULL;
+  if (len == 1 && line[0] == '\n')
+    return NULL;
   if (line[len - 1] == '\n') {
     line[len - 1] = '\0';
   } else {

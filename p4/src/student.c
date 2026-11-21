@@ -62,26 +62,32 @@ char *sd_cpy_or_empty(char *a) {
 StudentData *sd_ask() {
   printf("NAME: ");
   char *name = line_input();
+  if (name == NULL)
+    return NULL;
 
   printf("SURNAME: ");
   char *surname = line_input();
+  if (surname == NULL) {
+    free(name);
+    return NULL;
+  }
 
   printf("BIRTH_YEAR: ");
   char *year = line_input();
+  if (year == NULL) {
+    free(name);
+    free(surname);
+    return NULL;
+  }
   if (strlen(year) != 4) {
     printf("Note: birth years are usually 4 digits long\n");
   }
 
   StudentData *data = xmalloc(sizeof(StudentData));
 
-  data->name = sd_cpy_or_empty(name);
-  free(name);
-
-  data->surname = sd_cpy_or_empty(surname);
-  free(surname);
-
-  data->birth_year = sd_cpy_or_empty(year);
-  free(year);
+  data->name = name;
+  data->surname = surname;
+  data->birth_year = year;
 
   return data;
 }
@@ -101,6 +107,8 @@ void sd_print_horizontal(StudentData *obj, const char *separator) {
 }
 
 void sd_free(StudentData **obj) {
+  if (*obj == NULL)
+    return;
   free((*obj)->name);
   free((*obj)->surname);
   free((*obj)->birth_year);
@@ -108,6 +116,8 @@ void sd_free(StudentData **obj) {
   *obj = NULL;
 }
 void sd_free_content(StudentData *obj) {
+  if (obj == NULL)
+    return;
   free(obj->name);
   free(obj->surname);
   free(obj->birth_year);

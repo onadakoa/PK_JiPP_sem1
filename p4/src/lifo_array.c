@@ -249,6 +249,10 @@ int read_items(FILE *stream) {
 void h_add() {
   printf("item prompt\n");
   StudentData *it = sd_ask();
+  if (it == NULL) {
+    printf("i won't add blank item\n");
+    return;
+  }
   add_item(*it);
   free(it);
   printf("item added\n");

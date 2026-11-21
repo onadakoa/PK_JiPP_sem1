@@ -230,6 +230,10 @@ void h_pop() {
 void h_add() {
   printf("\ncreating StudentData Item:\n");
   StudentData *data = sd_ask();
+  if (data == NULL) {
+    printf("i won't add blank item\n");
+    return;
+  }
 
   add_item(*data);
   free(data);
@@ -252,71 +256,71 @@ void h_find() {
     printf("cancelled\n");
     return;
 
-  printf("searched phrase:\t%s\n", phrase);
-  printf("in field:\t%s\n", StudentDataFieldName[field_id]);
+    printf("searched phrase:\t%s\n", phrase);
+    printf("in field:\t%s\n", StudentDataFieldName[field_id]);
 
-  StudentData it;
-  if (search_item(&it, field_id, phrase) == 1) {
-    printf("found:\n");
-    sd_print(&it);
+    StudentData it;
+    if (search_item(&it, field_id, phrase) == 1) {
+      printf("found:\n");
+      sd_print(&it);
+      free(phrase);
+      return;
+    }
+
     free(phrase);
-    return;
+    printf("no item found\n");
   }
 
-  free(phrase);
-  printf("no item found\n");
-}
-
-void h_write() {
-  printf("file path: ");
-  char *path = line_input();
-  if (path == NULL) {
-    printf("cancelled\n");
-    return;
-  }
-
-  FILE *file = fopen(path, "wb");
-  if (file == NULL) {
-    printf("couldn't open/create file '%s'", path);
-    free(path);
-    return;
-  }
-  printf("using '%s'\n", path);
-
-  write_items(file);
-  free(path);
-  fclose(file);
-}
-
-void h_read() {
-  if (sd_array != NULL || sd_array_len > 0) {
-    printf("your array isn't empty. do you want to erase it? [y/n]: ");
-    char *inp = line_input();
-    if (inp == NULL)
+  void h_write() {
+    printf("file path: ");
+    char *path = line_input();
+    if (path == NULL) {
+      printf("cancelled\n");
       return;
-    char option = inp[0];
-    free(inp);
+    }
 
-    if (option != 'y')
+    FILE *file = fopen(path, "wb");
+    if (file == NULL) {
+      printf("couldn't open/create file '%s'", path);
+      free(path);
       return;
-    free_items();
-  }
-  printf("file path: ");
-  char *path = line_input();
-  if (path == NULL) {
-    printf("cancelled\n");
-    return;
-  }
+    }
+    printf("using '%s'\n", path);
 
-  FILE *file = fopen(path, "rb");
-  if (file == NULL) {
-    printf("couldn't open file '%s'", path);
+    write_items(file);
     free(path);
-    return;
+    fclose(file);
   }
-  printf("using '%s'\n", path);
 
-  read_items(file);
-  free(path);
-  fclose(file);
-}
+  void h_read() {
+    if (sd_array != NULL || sd_array_len > 0) {
+      printf("your array isn't empty. do you want to erase it? [y/n]: ");
+      char *inp = line_input();
+      if (inp == NULL)
+        return;
+      char option = inp[0];
+      free(inp);
+
+      if (option != 'y')
+        return;
+      free_items();
+    }
+    printf("file path: ");
+    char *path = line_input();
+    if (path == NULL) {
+      printf("cancelled\n");
+      return;
+    }
+
+    FILE *file = fopen(path, "rb");
+    if (file == NULL) {
+      printf("couldn't open file '%s'", path);
+      free(path);
+      return;
+    }
+    printf("using '%s'\n", path);
+
+    read_items(file);
+    free(path);
+    fclose(file);
+  }
