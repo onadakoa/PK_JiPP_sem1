@@ -1,61 +1,90 @@
-#include <bits/time.h>
 #include <math.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
-double fact(size_t x) {
-  double out = 1;
-  for (size_t i = 1; i <= x; i++) {
-    out *= i;
-  }
-  return out;
-}
+double f_scisle(double x) { return x * cos(x); }
 
-double x_cos_x(double x, size_t n) {
-  double out = 0;
-
-  for (size_t i = 0; i < n; i++) {
-    out += pow(-1, i) / fact(2 * i) * pow(x, 2 * i + 1);
-  }
-
-  return out;
-}
-
-/*
- * optimized formula:
- * ai * -x^2/((2i+1)(2i+2))
- */
-double x_cos_x_opt(double x, size_t n) {
+// a_(n+1)/a_n
+double f_szereg(double x, double delta, int M, int *lws, int *ws) {
   double sum = 0;
-  double last_calc = x;
+  double term = x;
 
-  for (size_t i = 0; i < n; i++) {
-    sum += last_calc;
-    last_calc *= (-1 * x * x) / ((2.0 * i + 1.0) * (2.0 * i + 2.0));
+  for (int n = 0; n < M; n++) {
+    sum += term;
+
+    if (fabs(term) < delta) {
+      *lws = n + 1;
+      *ws = (n == M - 1) ? 3 : 1;
+      return sum;
+    }
+
+    term *= -x * x / ((2.0 * n + 1.0) * (2.0 * n + 2.0));
   }
 
+  *lws = M;
+  *ws = 2;
   return sum;
 }
 
-int main(int argc, char **argv) {
-  if (argc != 3) {
-    printf("not enough arguments\n");
-    printf("Usage:\n\t./main <x> <n>");
-    return 0;
+int main() {
+  printf("przedzial [a,b]:\n");
+  printf("a: ");
+  double a = 0;
+  scanf("%lf", &a);
+  printf("b: ");
+  double b = 0;
+  scanf("%lf", &b);
+  if (a > b) {
+    printf("niepoprawny przedzial [%lf, %lf]\n", a, b);
+    return 1;
   }
-  double x = atof(argv[1]);
-  int n = atoi(argv[2]);
+  printf("liczba części(n): ");
+  int n = 0;
+  scanf("%i", &n);
   if (n < 1) {
-    printf("Error: n must be 1 or more");
+    printf("niepoprawne podzial na czesci (n>0)\n");
+    return 1;
+  }
+  printf("dokładność (delta): ");
+  double d = 0;
+  scanf("%lf", &d);
+  if (d <= 0) {
+    printf("delta musi byc > 0\n");
+    return 1;
+  }
+  printf("maksymalna ilość summowanych wyrazów (M): ");
+  int m = 0;
+  scanf("%i", &m);
+  if (m < 1) {
+    printf("niepoprawna ilosc sumowanych wyrazow (m>0)\n");
     return 1;
   }
 
-  printf("calculating xcosx for n: %i iterations\n", n);
-  printf("x = %.17g\tn = %i\n", x, n);
+  printf("plik do zapisu: ");
+  char *path = malloc(255);
+  scanf("%250s", path);
+  FILE *file = fopen(path, "w");
+  free(path);
+  if (file == NULL) {
+    printf("nie moge otworzyc pliku\n");
+    return 1;
+  }
 
-  printf("xcosx:          \t%.17g\n", x_cos_x(x, n));
-  printf("xcosx optimized:\t%.17g\n", x_cos_x_opt(x, n));
+  printf("x\tf_szereg\tf_scisle\tliczba wyrazow\twarunek stopu\n");
+  fprintf(file, "x\tf_szereg\tf_scisle\tliczba wyrazow\twarunek stopu\n");
+  double diff = (b - a) / n;
+  for (int i = 0; i <= n; i++) {
+    double x = a + i * diff;
 
+    double scisle = f_scisle(x);
+    int lws = 0;
+    int ws = 0;
+    double szereg = f_szereg(x, d, m, &lws, &ws);
+
+    printf("%g\t%lf\t%lf\t%i\t%i\n", x, szereg, scisle, lws, ws);
+    fprintf(file, "%g\t%lf\t%lf\t%i\t%i\n", x, szereg, scisle, lws, ws);
+  }
+  fclose(file);
   return 0;
 }
