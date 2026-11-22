@@ -1,7 +1,7 @@
 .PHONY: main
 
-main:
-	gcc main.c -o main
+src/utils:
+	gcc src/utils.c -o src/utils -Iincl -c
 
-run: main
-	./main fee foo
+main: src/utils
+	gcc src/main.c src/utils -o main -Iincl
