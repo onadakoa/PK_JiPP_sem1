@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#define matrix_size(n) (n * (n + 1)) / 2
+#define matrix_size(n) ((n * (n + 1)) / 2)
 #include <stdio.h>
 
 void read_matrix(int n, double *matrix);
@@ -34,6 +34,7 @@ int main() {
   printf("\nAx:\n");
   print_vector(n, out_vector);
 
+  free(out_vector);
   return 0;
 }
 
