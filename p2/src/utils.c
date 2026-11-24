@@ -21,6 +21,9 @@ void help() {
 
 int *argv_to_int(int argc, char **argv) {
   int *out = malloc(sizeof(int) * argc);
+  if (!out)
+    error("can't malloc");
+
   for (int i = 0; i < argc; i++) {
     if ((out[i] = atoi(argv[i])) <= 0) {
       error("one of arguments is out of bounds, must be greater than 0");

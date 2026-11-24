@@ -96,6 +96,10 @@ void print_vector(int n, double *vector) {
 
 double *multiply_matrix_vector(int n, double *matrix, double *vector) {
   double *out_vector = malloc(sizeof(double) * n);
+  if (!out_vector) {
+    printf("blad alokacji\n");
+    exit(1);
+  }
 
   for (int i = 0; i < n; i++) {
     double out_element = 0;

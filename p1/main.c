@@ -63,6 +63,11 @@ int main() {
 
   printf("plik do zapisu: ");
   char *path = malloc(255);
+  if (!path) {
+    printf("blad allokacji\n");
+    exit(1);
+  }
+
   scanf("%250s", path);
   FILE *file = fopen(path, "w");
   free(path);

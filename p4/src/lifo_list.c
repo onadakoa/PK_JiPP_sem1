@@ -287,6 +287,10 @@ int read_items(FILE *stream) {
 
   while (1) {
     StudentData *data = calloc(1, sizeof(StudentData));
+    if (!data) {
+      printf("can't calloc\n");
+      exit(1);
+    }
     char **fields[3] = {&data->name, &data->surname, &data->birth_year};
     for (int i = 0; i < 3; i++) {
       char *str = sd_read_fstring(stream);
