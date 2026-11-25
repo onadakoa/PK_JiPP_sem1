@@ -87,11 +87,10 @@ void print_matrix(int n, double *matrix) {
 }
 
 void print_vector(int n, double *vector) {
-  printf("\nzbudowany vector:\n[\t");
+  printf("\nzbudowany vector:\n");
   for (int i = 0; i < n; i++) {
-    printf("%g\t", vector[i]);
+    printf("[\t%g\t]\n", vector[i]);
   }
-  printf("]\n");
 }
 
 double *multiply_matrix_vector(int n, double *matrix, double *vector) {

@@ -83,8 +83,8 @@ int main() {
     double x = a + i * diff;
 
     double scisle = f_scisle(x);
-    int lws = 0;
-    int ws = 0;
+    int lws = 0; // liczba wyrazow uzyta
+    int ws = 0; // warunek stopu
     double szereg = f_szereg(x, d, m, &lws, &ws);
 
     printf("%g\t%lf\t%lf\t%i\t%i\n", x, szereg, scisle, lws, ws);
